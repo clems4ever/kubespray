@@ -1,11 +1,11 @@
 ---
 # Required from inventory:
 #   calico_rr_ip - which specific IP to use for RR, defaults to
-#   "ip" from inventory or "ansible_default_ipv4.address"
+#   "ip" from inventory or "ansible_tun0.ipv4.address"
 
 - name: Calico-rr | Set IP fact
   set_fact:
-    rr_ip: "{{ calico_rr_ip | default(ip) | default(ansible_default_ipv4.address) }}"
+    rr_ip: "{{ calico_rr_ip | default(ip) | default(ansible_tun0.ipv4.address) }}"
 
 - name: Calico-rr | Create calico certs directory
   file:

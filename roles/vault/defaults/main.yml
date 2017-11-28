@@ -63,7 +63,7 @@ vault_config:
     etcd:
       address: "{{ vault_etcd_url }}"
       ha_enabled: "true"
-      redirect_addr: "https://{{ ansible_default_ipv4.address }}:{{ vault_port }}"
+      redirect_addr: "https://{{ ansible_tun0.ipv4.address }}:{{ vault_port }}"
       tls_ca_file: "{{ vault_etcd_cert_dir }}/ca.pem"
   cluster_name: "kubernetes-vault"
   default_lease_ttl: "{{ vault_default_lease_ttl }}"

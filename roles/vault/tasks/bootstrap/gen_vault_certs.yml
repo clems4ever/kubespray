@@ -7,7 +7,7 @@
     issue_cert_ip_sans: >-
         [
         {%- for host in groups.vault -%}
-        "{{ hostvars[host]['ansible_default_ipv4']['address'] }}",
+        "{{ hostvars[host]['ansible_tun0']['ipv4']['address'] }}",
         {%- if hostvars[host]['ip'] is defined -%}
         "{{ hostvars[host]['ip'] }}",
         {%- endif -%}

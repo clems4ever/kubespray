@@ -183,7 +183,7 @@ no_proxy: >-
   {{ loadbalancer_apiserver.address | default('') }},
   {%- endif -%}
   {%- for item in (groups['k8s-cluster'] + groups['etcd'] + groups['calico-rr']|default([]))|unique -%}
-  {{ hostvars[item]['access_ip'] | default(hostvars[item]['ip'] | default(hostvars[item]['ansible_default_ipv4']['address'])) }},
+  {{ hostvars[item]['access_ip'] | default(hostvars[item]['ip'] | default(hostvars[item]['ansible_tun0']['ipv4']['address'])) }},
   {%-   if (item != hostvars[item]['ansible_hostname']) -%}
   {{ hostvars[item]['ansible_hostname'] }},
   {{ hostvars[item]['ansible_hostname'] }}.{{ dns_domain }},
@@ -200,9 +200,9 @@ proxy_env:
 # Vars for pointing to kubernetes api endpoints
 is_kube_master: "{{ inventory_hostname in groups['kube-master'] }}"
 kube_apiserver_count: "{{ groups['kube-master'] | length }}"
-kube_apiserver_address: "{{ ip | default(ansible_default_ipv4['address']) }}"
+kube_apiserver_address: "{{ ip | default(ansible_tun0.ipv4['address']) }}"
 kube_apiserver_access_address: "{{ access_ip | default(kube_apiserver_address) }}"
-first_kube_master: "{{ hostvars[groups['kube-master'][0]]['access_ip'] | default(hostvars[groups['kube-master'][0]]['ip'] | default(hostvars[groups['kube-master'][0]]['ansible_default_ipv4']['address'])) }}"
+first_kube_master: "{{ hostvars[groups['kube-master'][0]]['access_ip'] | default(hostvars[groups['kube-master'][0]]['ip'] | default(hostvars[groups['kube-master'][0]]['ansible_tun0']['ipv4']['address'])) }}"
 loadbalancer_apiserver_localhost: "{{ loadbalancer_apiserver is not defined }}"
 kube_apiserver_endpoint: |-
   {% if not is_kube_master and loadbalancer_apiserver_localhost|default(true) -%}
@@ -221,13 +221,13 @@ kube_apiserver_insecure_endpoint: >-
 
 # Vars for pointing to etcd endpoints
 is_etcd_master: "{{ inventory_hostname in groups['etcd'] }}"
-etcd_address: "{{ ip | default(ansible_default_ipv4['address']) }}"
+etcd_address: "{{ ip | default(ansible_tun0.ipv4['address']) }}"
 etcd_access_address: "{{ access_ip | default(etcd_address) }}"
 etcd_peer_url: "https://{{ etcd_access_address }}:2380"
 etcd_client_url: "https://{{ etcd_access_address }}:2379"
 etcd_access_addresses: |-
   {% for item in groups['etcd'] -%}
-    https://{{ hostvars[item]['access_ip'] | default(hostvars[item]['ip'] | default(hostvars[item]['ansible_default_ipv4']['address'])) }}:2379{% if not loop.last %},{% endif %}
+    https://{{ hostvars[item]['access_ip'] | default(hostvars[item]['ip'] | default(hostvars[item]['ansible_tun0']['ipv4']['address'])) }}:2379{% if not loop.last %},{% endif %}
   {%- endfor %}
 etcd_member_name: |-
   {% for host in groups['etcd'] %}
@@ -235,5 +235,5 @@ etcd_member_name: |-
   {% endfor %}
 etcd_peer_addresses: |-
   {% for item in groups['etcd'] -%}
-    {{ "etcd"+loop.index|string }}=https://{{ hostvars[item].access_ip | default(hostvars[item].ip | default(hostvars[item].ansible_default_ipv4['address'])) }}:2380{% if not loop.last %},{% endif %}
+    {{ "etcd"+loop.index|string }}=https://{{ hostvars[item].access_ip | default(hostvars[item].ip | default(hostvars[item].ansible_tun0.ipv4['address'])) }}:2380{% if not loop.last %},{% endif %}
   {%- endfor %}

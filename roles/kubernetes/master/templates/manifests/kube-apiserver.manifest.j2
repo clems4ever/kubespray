@@ -28,7 +28,7 @@ spec:
     command:
     - /hyperkube
     - apiserver
-    - --advertise-address={{ ip | default(ansible_default_ipv4.address) }}
+    - --advertise-address={{ ip | default(ansible_tun0.ipv4.address) }}
     - --etcd-servers={{ etcd_access_addresses }}
     - --etcd-quorum-read=true
     - --etcd-cafile={{ etcd_cert_dir }}/ca.pem
